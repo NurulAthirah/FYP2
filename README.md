@@ -12,3 +12,7 @@ npm i react-native-safe-area-context
 npm install @react-navigation/native-stack
 
 **use yarn instead of npm
+
+1. Do npm uninstall firebase
+2. npm cache clear
+3. npm i firebase@^4.8.0 --save
