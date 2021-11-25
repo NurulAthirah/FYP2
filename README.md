@@ -11,6 +11,11 @@ npm i react-native-safe-area-context
 
 npm install @react-navigation/native-stack
 
+yarn add react-native-gesture-handler react-native-reanimated
+
+yarn add @react-navigation/drawer
+
+
 **use yarn instead of npm
 
 1. Do npm uninstall firebase
