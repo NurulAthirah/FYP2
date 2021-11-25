@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React, { Component } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -5,12 +6,11 @@ import HomeScreen from "./src/screens/HomeScreen";
 import DetailsScreen from "./src/screens/DetailsScreen";
 import { db } from './src/config/db';
 import firebase from 'firebase';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 //import FormScreen from "./src/screens/FormScreen";
 
 const Stack = createNativeStackNavigator();
-
-
 
 
 function NavStack()
@@ -23,7 +23,7 @@ function NavStack()
         options={{ title: 'Home' }}
       />
       <Stack.Screen 
-        name="Details" 
+        name="Details" a
         component={DetailsScreen} 
         options={{ title: 'Details' }}
       />
@@ -32,22 +32,24 @@ function NavStack()
   );
 }
 
+const Drawer = createDrawerNavigator();
+
 export default class App extends Component {
 
   componentWillMount() {
 
-  firebase.database().ref('users/004').set(
+    firebase.database().ref('users/004').set(
     {
       name: 'aimi',
       age: 21
     }
-  ).then(() => {
+   ).then(() => {
     console.log('INSERTED');
   }).catch((error) => {
     console.log(error);
   });
 
-  firebase.database().ref('users/001').set(
+     firebase.database().ref('users/001').set(
     {
       name: 'tirah',
       age: 21
@@ -57,9 +59,8 @@ export default class App extends Component {
   }).catch((error) => {
     console.log(error);
   });
-
-  firebase.database().ref('users/').on('value', function (snapshot) {
-    console.log(snapshot.val()) //display data taht's changed from firebase on console only 
+      firebase.database().ref('users/').on('value', function (snapshot) {
+      console.log(snapshot.val()) //display data taht's changed from firebase on console only 
 });
 }
 
@@ -68,8 +69,11 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-      <NavStack />
-      </NavigationContainer>
+      <Drawer.Navigator initialRouteName="Home">
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="DetailsScreen" component={DetailsScreen} />
+      </Drawer.Navigator>
+    </NavigationContainer>
     );
   }
 }
