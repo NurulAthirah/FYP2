@@ -15,6 +15,8 @@ yarn add react-native-gesture-handler react-native-reanimated
 
 yarn add @react-navigation/drawer
 
+yarn add react-native-modal 
+
 
 **use yarn instead of npm
 
