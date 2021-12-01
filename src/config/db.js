@@ -11,5 +11,13 @@ let config = {
   measurementId: "G-PX4WSFLRP1"
 }
 
-let app = firebase.initializeApp(config);
+let app;
+if (firebase.apps.length === 0) {
+  app = firebase.initializeApp(config);
+} else {
+  app = firebase.app()
+}
+
 export const db = app.database();
+const auth = firebase.auth()
+export { auth };
