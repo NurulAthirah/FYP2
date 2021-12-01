@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 import DetailsScreen from "./src/screens/DetailsScreen";
+import SignUpScreen from './src/screens/SignUpScreen';
 import { db } from './src/config/db';
 import firebase from 'firebase';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -69,9 +70,10 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
+      <Drawer.Navigator initialRouteName="SignUp">
+      <Drawer.Screen name="SignUp"  options={{ headerShown: false }} component={SignUpScreen} />
         <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="DetailsScreen" component={DetailsScreen} />
+        <Drawer.Screen name="Details" component={DetailsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
     );
