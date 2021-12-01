@@ -1,17 +1,25 @@
 import React, { Component, useState } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Text, StyleSheet, Button, TouchableOpacity,SafeAreaView, ScrollView, Modal } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome,faShoppingBag,faUser, faFileInvoiceDollar, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import BottomSheet from 'reanimated-bottom-sheet';
-import Animated from 'react-native-reanimated'
 import { useNavigation } from '@react-navigation/native';
+import DetailsScreen from "./DetailsScreen";
+import SignUpScreen from "./SignUpScreen";
 
 export default function HomeScreen ({}) {
 
-const [ModalOpen, setModalOpen] = useState(true)
+const [ModalOpen, setModalOpen] = useState(false)
+
 
 const navigation = useNavigation();
+
     return (
+
+  
+
+
 <SafeAreaView style={styles.container}>
 <View style={styles.rect}>
   <View style={styles.rect2}></View>
@@ -73,7 +81,7 @@ transparent visible={ModalOpen}>
         <TouchableOpacity
         onPress={() => setModalOpen(true)}
         style={styles.circle2}>
-    <FontAwesomeIcon icon={faPlusCircle} size={60} color={'#FF367E'} ></FontAwesomeIcon>
+    <FontAwesomeIcon icon={faPlusCircle} margin={-5} size={60} color={'#FF367E'} ></FontAwesomeIcon>
     </TouchableOpacity>
 
 
@@ -89,6 +97,7 @@ transparent visible={ModalOpen}>
         </Text>
       </ScrollView>
    
+
 </SafeAreaView>
 
 
@@ -136,13 +145,13 @@ const styles = StyleSheet.create({
     margin: 25
   },
   circle2: {
-    width: 60,  
-    height: 60,   
+    width: 50,  
+    height: 50,   
     borderRadius: 30,                                                
     position: 'absolute',    
     backgroundColor: "white",                                     
-    bottom: 10,                                                    
-    right: 5, 
+    bottom: 15,                                                    
+    right: 10, 
     zIndex:99
 
   },
