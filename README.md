@@ -26,7 +26,11 @@ yarn add firebase@^8.2.3 --save
 
 npm i --save react-native-svg # **
 $ npm i --save @fortawesome/fontawesome-svg-core
+
 $ npm i --save @fortawesome/free-solid-svg-icons
+
 $ npm i --save @fortawesome/react-native-fontawesome
+
 $ npm i --save @fortawesome/free-brands-svg-icons
+
 $ npm i --save @fortawesome/free-regular-svg-icons
