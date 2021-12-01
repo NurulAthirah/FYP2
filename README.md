@@ -1,5 +1,4 @@
-# FYP2
-npm install firebase
+yarn add npm install firebase
 
 npm install -g firebase-tools
 
@@ -11,15 +10,16 @@ npm i react-native-safe-area-context
 
 npm install @react-navigation/native-stack
 
+yarn add native-base
+
 yarn add react-native-gesture-handler react-native-reanimated
 
 yarn add @react-navigation/drawer
 
 yarn add react-native-modal 
 
+yarn add @react-native-firebase/app
 
-**use yarn instead of npm
+yarn add @react-native-firebase/auth
 
-1. Do npm uninstall firebase
-2. npm cache clear
-3. npm i firebase@^4.8.0 --save
+yarn add firebase@^8.2.3 --save
