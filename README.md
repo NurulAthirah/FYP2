@@ -24,6 +24,8 @@ yarn add @react-native-firebase/auth
 
 yarn add firebase@^8.2.3 --save
 
+yarn add @react-native-firebase/firestore
+
 npm i --save react-native-svg # **
 $ npm i --save @fortawesome/fontawesome-svg-core
 
