@@ -1,4 +1,4 @@
-import * as firebase from 'firebase';
+import firebase from 'firebase';
 
 let config = {
   apiKey: "AIzaSyBjTmojUckNsYKCaO02-u2pRmCG2RrZsKA",
@@ -17,6 +17,8 @@ if (firebase.apps.length === 0) {
 } else {
   app = firebase.app()
 }
+
+
 
 export const db = app.database();
 const auth = firebase.auth()
