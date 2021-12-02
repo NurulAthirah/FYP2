@@ -34,3 +34,7 @@ $ npm i --save @fortawesome/react-native-fontawesome
 $ npm i --save @fortawesome/free-brands-svg-icons
 
 $ npm i --save @fortawesome/free-regular-svg-icons
+
+
+Refer to https://rnfirebase.io/ [Getting Started] 
+Refer to Android setup
