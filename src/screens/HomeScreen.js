@@ -1,11 +1,9 @@
 import React, { Component, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Text, StyleSheet, Button, TouchableOpacity,SafeAreaView, ScrollView, Modal } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome,faShoppingBag,faUser, faFileInvoiceDollar, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import DetailsScreen from "./DetailsScreen";
+import ProductsScreen from "./ProductsScreen";
 import SignUpScreen from "./SignUpScreen";
 
 export default function HomeScreen ({}) {
@@ -16,10 +14,6 @@ const [ModalOpen, setModalOpen] = useState(false)
 const navigation = useNavigation();
 
     return (
-
-  
-
-
 <SafeAreaView style={styles.container}>
 <View style={styles.rect}>
   <View style={styles.rect2}></View>
@@ -35,7 +29,7 @@ const navigation = useNavigation();
     </TouchableOpacity>
 
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Details')}
+        onPress={() =>  navigation.navigate('Products')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faShoppingBag} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Products</Text>
@@ -66,7 +60,7 @@ transparent visible={ModalOpen}>
     <View style={styles.modalContainer}>
    
       <TouchableOpacity 
-      onPress={() =>  navigation.navigate('Details')}>
+      onPress={() =>  navigation.navigate('Products')}>
       <Text style={styles.text2}>Add Products</Text>
       </TouchableOpacity>
       <TouchableOpacity 
@@ -80,6 +74,7 @@ transparent visible={ModalOpen}>
 
         <TouchableOpacity
         onPress={() => setModalOpen(true)}
+       
         style={styles.circle2}>
     <FontAwesomeIcon icon={faPlusCircle} margin={-5} size={60} color={'#FF367E'} ></FontAwesomeIcon>
     </TouchableOpacity>
