@@ -36,7 +36,7 @@ const navigation = useNavigation();
     </TouchableOpacity>
     
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Home')}
+        onPress={() =>  navigation.navigate('Transactions')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faFileInvoiceDollar} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Records</Text>
