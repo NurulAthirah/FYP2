@@ -3,77 +3,42 @@ import React, { Component } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
-import DetailsScreen from "./src/screens/DetailsScreen";
+import ProductsScreen from "./src/screens/ProductsScreen";
 import SignUpScreen from './src/screens/SignUpScreen';
+import TransactionsScreen from './src/screens/TransactionsScreen';
 import { db } from './src/config/db';
 import firebase from 'firebase';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
+import {auth} from './src/config/db'
+
 
 //import FormScreen from "./src/screens/FormScreen";
 
-const Stack = createNativeStackNavigator();
-
-
-function NavStack()
-{
-  return (
-     <Stack.Navigator initialRouteName="HomeScreen">
-      <Stack.Screen 
-        name="Home" 
-        component={HomeScreen} 
-        options={{ title: 'Home' }}
-      />
-      <Stack.Screen 
-        name="Details" a
-        component={DetailsScreen} 
-        options={{ title: 'Details' }}
-      />
-    
-    </Stack.Navigator>
-  );
-}
-
 const Drawer = createDrawerNavigator();
 
+
 export default class App extends Component {
-
-  componentWillMount() {
-
-    firebase.database().ref('users/004').set(
-    {
-      name: 'aimi',
-      age: 21
-    }
-   ).then(() => {
-    console.log('INSERTED');
-  }).catch((error) => {
-    console.log(error);
-  });
-
-     firebase.database().ref('users/001').set(
-    {
-      name: 'tirah',
-      age: 21
-    }
-  ).then(() => {
-    console.log('INSERTED');
-  }).catch((error) => {
-    console.log(error);
-  });
-      firebase.database().ref('users/').on('value', function (snapshot) {
-      console.log(snapshot.val()) //display data taht's changed from firebase on console only 
-});
-}
-
 
   
   render() {
     return (
       <NavigationContainer>
-      <Drawer.Navigator initialRouteName="SignUp">
+      <Drawer.Navigator initialRouteName="SignUp"drawerContent={props => { //Nanti tukar initial route name to SIgnup balik
+    return (
+      <DrawerContentScrollView {...props}>
+        <DrawerItemList {...props} />
+        <DrawerItem label="Logout" onPress={() => {
+
+      auth.signOut().then(() => props.navigation.navigate("SignUp"))
+      console.log('Logged out');
+      }} />
+      </DrawerContentScrollView>
+    )
+  }}>
       <Drawer.Screen name="SignUp"  options={{ headerShown: false }} component={SignUpScreen} />
         <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Details" component={DetailsScreen} />
+        <Drawer.Screen name="Products" component={ProductsScreen} />
+        <Drawer.Screen name="Transactions" component={TransactionsScreen} />
       </Drawer.Navigator>
     </NavigationContainer>
     );
