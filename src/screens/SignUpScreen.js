@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState, useContext } from 'react'
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import RNRestart from 'react-native-restart';
+
 import {auth}  from '../config/db'
 
 
@@ -19,6 +21,17 @@ const SignUpScreen = () => {
     return unsubscribe
   }, [])
 
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        RNRestart.Restart(),
+        navigation.navigate("SignUp"),
+        console.log('Logged out');
+       
+      })
+      .catch(error => alert(error.message))
+  }
 
  const handleSignUp = () => {
     auth
@@ -35,6 +48,8 @@ const SignUpScreen = () => {
       .signInWithEmailAndPassword(email, password)
       .then(userCredentials => {
         const user = userCredentials.user;
+        navigation.navigate("Home"),
+        RNRestart.Restart(),
         console.log('Logged in with:', user.email);
       })
       .catch(error => alert(error.message))
@@ -75,6 +90,15 @@ const SignUpScreen = () => {
       >
         <Text style={styles.buttonOutlineText}>Register</Text>
       </TouchableOpacity>
+
+    
+      <TouchableOpacity
+        onPress={handleSignOut}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Sign out</Text>
+      </TouchableOpacity>
+
     </View>
   </View>
 )
