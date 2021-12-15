@@ -5,7 +5,7 @@ import { faHome,faShoppingBag,faUser, faFileInvoiceDollar, faPlusCircle, faTimes
 import { useNavigation } from '@react-navigation/native';
 import ProductsScreen from "./ProductsScreen";
 import SignUpScreen from "./SignUpScreen";
-
+import ProfileScreen from "./ProfileScreen";
 export default function HomeScreen ({}) {
 
 const [ModalOpen, setModalOpen] = useState(false)
@@ -43,7 +43,7 @@ const navigation = useNavigation();
     </TouchableOpacity>
     
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Home')}
+        onPress={() =>  navigation.navigate('Profile')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faUser} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Profile</Text>
