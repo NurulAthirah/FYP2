@@ -5,74 +5,92 @@ import firebase from 'firebase';
 
 export function addProduct(product, addComplete){
 
-     firestore()
-    .collection('userId')
-    .doc(auth.currentUser.uid)
-    .collection('product')
-    .add({ //add in doc id
+    var newDocRef = firestore().collection('userId').doc(auth.currentUser.uid).collection('product').doc();
+
+    newDocRef.set({
+    
+        picture: product.picture,
+        productid: newDocRef.id,
         userId: auth.currentUser.uid,
         name: product.name,
         desc: product.desc,
         quantity: product.quantity,
         price: product.price,
         productlink: product.productlink,
-        color: product.color,
         createdAt: firestore.FieldValue.serverTimestamp()
         
-    }).then((snapshot) => snapshot.get())
+    })
+    
+    newDocRef.get()
     .then ((productData) => addComplete (productData.data()))
     .catch((error) => console.log(error));
+
+}
+
+export function DeleteProduct(product, deleteComplete){
+
+    console.log(product.productid)
+
+    firestore()
+    .collection('userId')
+    .doc(auth.currentUser.uid)
+    .collection('product')
+    .doc(product.productid)
+    .delete()
+    .catch((error) => console.log(error));
+  
 }
 
 export function addTransaction(transaction, addComplete){
+  
 
-    firestore()
+    var newDocRef = firestore().collection('userId').doc(auth.currentUser.uid).collection('transaction').doc();
+
+    newDocRef.set({
+    
+        userId: auth.currentUser.uid,
+        transid: newDocRef.id, //this is transactionid
+        name: transaction.name,
+        id: transaction.id, //this is product id
+        quantity: transaction.quantity,
+        sales: transaction.sales,
+        transactionDate: transaction.transactionDate,
+        datetime: transaction.datetime,
+        createdAt: firestore.FieldValue.serverTimestamp()
+ 
+        
+    })
+    
+    newDocRef.get()
+    .then ((transactionData) => addComplete (transactionData.data()))
+    .catch((error) => console.log(error));
+
+
+
+   const productid = transaction.id;
+   const qty = parseInt(transaction.quantity);
+
+
+   const increment = firestore.FieldValue.increment(qty);
+
+
+   firestore()
    .collection('userId')
    .doc(auth.currentUser.uid)
    .collection('product')
-   .doc() //docid products
-   .collection('transaction')
-   .add({
-       userId: auth.currentUser.uid,
-       name: transaction.name,
-       quantity: transaction.quantity,
-       sales: transaction.sales,
-       transactionDate: transaction.transactionDate,
-       datetime: transaction.datetime,
-       createdAt: firestore.FieldValue.serverTimestamp()
-       
-   }).then((snapshot) => snapshot.get())
-   .then ((transactionData) => addComplete (transactionData.data()))
-   .catch((error) => console.log(error));
-}
-
-export async function updateQuantity(){
-    //update quantity of products based on transaction
-
-
-
+   .doc(productid)
+   .update({
+    quantity: increment,
+  }).catch((error) => console.log(error));;
+  console.log('Quantity Updated');
 }
 
 
 export async function getProduct(productsRetrieved){
   
-    
+    console.log("hey")
     const uid = auth.currentUser.uid
-  //  const increaseBy = firebase.firestore.FieldValue.increment(1)
     var productList =[];
-
-    firestore()
-    .collection('userId')
-    .doc(uid)
-    .collection('product')
-    .doc('6Dp2WTao1SaQVdVjy3P8')
-    .update(
-        {
-            quantity: 15 //idk how to actually increment. using firestore.FieldValue.increment will give object error. I can change but not increment
-        }
-    ) .catch((error) => console.log(error));
-
-
 
     var snapshot = await firestore()
     .collection('userId')
@@ -83,8 +101,8 @@ export async function getProduct(productsRetrieved){
 
     snapshot.forEach((doc) => {
         productList.push(doc.data());
-
     }),
+ 
  
     console.log(productList);
     productsRetrieved(productList);
@@ -108,4 +126,18 @@ export async function getTransaction(transactionsRetrieved){
  
     console.log(transactionList);
     transactionsRetrieved(transactionList);
+}
+
+export function DeleteTrans(transaction, deleteComplete){
+
+    console.log(transaction.transid)
+
+    firestore()
+    .collection('userId')
+    .doc(auth.currentUser.uid)
+    .collection('transaction')
+    .doc(transaction.transid) //its not gonna work yet 
+    .delete()
+    .catch((error) => console.log(error));
+  
 }
