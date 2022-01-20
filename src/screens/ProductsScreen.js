@@ -9,51 +9,53 @@ import { View,
          ScrollView,
          Modal,
          RefreshControl,
+         Image,
          TextInput } from "react-native";
-import {addProduct, getProduct} from '../api/productApi';
-import PlusIcon from "../components/PlusIcon";
-import { useNavigation } from '@react-navigation/core'
+import {addProduct, getProduct, DeleteProduct} from '../api/productApi';
 import {ListItem, Divider} from 'react-native-elements'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {faPlusCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
+import {faPlusCircle, faTimesCircle, faTrash} from '@fortawesome/free-solid-svg-icons';
 import {auth} from '../config/db'
 import ProductImgPicker from "../components/ProductImgPicker";
 import { KeyboardAvoidingView, NativeBaseProvider } from "native-base";
-
+import { Avatar } from "react-native-elements/dist/avatar/Avatar";
+import RNRestart from "react-native-restart";
+import { useNavigation } from '@react-navigation/core'
 
 
 class ProductsScreen extends Component {
 
   _onRefresh() {
     this.setState({refreshing: true});
-  this.onItemAdded,
       this.setState({refreshing: false});
     
   }
+
   
    uid = auth.currentUser.uid
 
- colors = [
-      'red', 'black', 'blue'
-    ]
-
     state = {
       productList: [],
+      picture: null,
+      refreshing: false,
       currentItem: null,
       desc: null,
       quantity: null,
       price: null,
       productlink: null,
-      picture: null,
       ModalOpen: false
         }
-     
+
+      
+
     onItemAdded = (product) => {
+     
       this.setState(prevState => ({
         productList: [...prevState.productList, product]
       }))
       console.log("Item Added");
       console.log(product)
+ 
     }
 
     onItemReceived = (productList) => {
@@ -63,19 +65,42 @@ class ProductsScreen extends Component {
       }));
     }
 
-    componentDidMount() {
+    onItemDelete = (index) => {
 
+      console.log(index)
+      var newProductList = [...this.state.productList];
+      
+      newProductList.splice(index, 1);
+  
+      this.setState(prevState => ({
+       productList: prevState.productList = newProductList
+      }));
+  
+
+    }
+  
+    componentDidMount() {
    getProduct(this.onItemReceived); //calls the items from firestore
+   this.setState({
+      picture: {uri: 'https://www.spicevillage.eu/media/catalog/product/n/o/not-found_1024x1024_91cf4817-5921-46d4-b879-da02cdd86719.png'} });
+   
     }
 
     setModalOpen = (visible) => {
       this.setState({ ModalOpen: visible });
+     
     }
-    setProductImage = (image) => {
-      props.setFieldValue('imageUri', image.uri);
+    
+    setProductImage = (img) => {
+      this.setState({ picture: img });
     }
+  
+    
+   
+
     render() {
     const { ModalOpen } = this.state;
+    const { picture} = this.state;
     return(
       
 <View style={styles.container}>
@@ -86,11 +111,13 @@ class ProductsScreen extends Component {
 <Modal 
 visible={ModalOpen}
 animationType={'slide'}
-transparent={false}
+transparent={true}
 style={{position: 'absolute'}}>
 
   <KeyboardAvoidingView  enabled behavior={Platform.OS === "android" ? undefined : "position"}>
-  <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled">
+  <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled"  contentContainerStyle={styles.scrollView}
+        
+      >
   <View style={{ flex: 1 }}>
   
   <View style={styles.modalBg}>
@@ -98,7 +125,7 @@ style={{position: 'absolute'}}>
       
     <View>
     <TouchableOpacity // close icon 
-        onPress={(ModalOpen) => this.setModalOpen(false) }
+        onPress={(ModalOpen) => this.setModalOpen(false)}
         style={styles.circle3}>
 
     <FontAwesomeIcon icon={faTimesCircle} margin={-5} size={40} color={'#FF367E'} ></FontAwesomeIcon>
@@ -134,6 +161,7 @@ style={{position: 'absolute'}}>
         style={styles.input}
         placeholder="Quantity"
         value={this.state.quantity}
+        keyboardType='numeric'
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
         quantity: prevState.quantity = text 
@@ -145,6 +173,7 @@ style={{position: 'absolute'}}>
         style={styles.input}
         placeholder="Price"
         value={this.state.price}
+        keyboardType='numeric'
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
         price: prevState.price = text 
@@ -157,26 +186,24 @@ style={{position: 'absolute'}}>
         value={this.state.productlink}
         ref={input => { this.textInput = input }}
         onChangeText={(text) => this.setState(prevState => ({
-        price: prevState.productlink = text 
+        productlink: prevState.productlink = text 
         }))
       
       } />
-<View style={[{ width: "40%", alignSelf: 'center'}]}>
+<View style={[{ width: "40%", alignSelf: 'center', position: 'absolute', bottom: -50, right: 15}]}>
       <Button
       title='Add Product'
       color='#FF367E'
       onPress={() => 
         
-
-        
           addProduct({
             userId: this.uid,
+            picture: this.state.picture,
             name: this.state.currentItem,
             desc: this.state.desc,
             quantity: this.state.quantity,
             price: this.state.price,
             productlink: this.state.productlink,
-            color: this.colors[Math.floor(Math.random() * this.colors.length)],
             ModalOpen : this.setModalOpen(false)
           },
           this.onItemAdded,
@@ -184,7 +211,15 @@ style={{position: 'absolute'}}>
           )
       }
       />
-       </View>
+      </View>
+      <View style={[{ width: "40%", alignSelf: 'center', position: 'absolute', bottom: -50, left: 15}]}>
+       <Button
+      title='Cancel'
+      color='#FF367E'
+      onPress={() => this.setModalOpen(false)
+      }
+      />
+      </View>
       </View>
     </View>
     </View>
@@ -200,33 +235,60 @@ style={{position: 'absolute'}}>
     <FontAwesomeIcon icon={faPlusCircle} margin={-5} size={60} color={'#FF367E'} ></FontAwesomeIcon>
     </TouchableOpacity>
 
-     
 
-      
       <FlatList 
      
        data={this.state.productList}
+       extraData={this.state.quantity}
        ItemSeparatorComponent={() => <Divider style={{ backgroundColor: 'black' }} />}
        keyExtractor={(item, index) => index.toString()}
+       refreshControl={
+        <RefreshControl
+          refreshing={this.state.refreshing}
+          onRefresh={this._onRefresh.bind(this)}
+        />
+      }
        renderItem={({item, index}) => {
         
          
           return(
-         <View containerStyle={{backgroundColor:"black"}}>
-          <ListItem key={item} bottomDivider  onPress={() => {}} >
+         <View>
+          
+          <ListItem key={item} bottomDivider  onPress={() => {}} 
+          >
           
             <ListItem.Content>
-              <ListItem.Title>{item.name}</ListItem.Title>
+            <Image
+            style={styles.tinyLogo}
+            source={item.picture}
+             />
+              <ListItem.Title>{item.name}  
+              
+              </ListItem.Title>
               <ListItem.Subtitle>{item.desc}</ListItem.Subtitle>
               <ListItem.Subtitle>{item.quantity}</ListItem.Subtitle>
               <ListItem.Subtitle>{item.price}</ListItem.Subtitle>
               <ListItem.Subtitle>{item.productlink}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.color}</ListItem.Subtitle>
               <ListItem.Subtitle>{item.userId}</ListItem.Subtitle>
               <ListItem.Subtitle>{auth.currentUser.uid}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.docid}</ListItem.Subtitle>
+              <ListItem.Subtitle>{item.productid}</ListItem.Subtitle>
+             
+               <TouchableOpacity 
+               onPress={() => 
+                {
+                  this.onItemDelete(index); //deletes from array
+                  DeleteProduct(item); //deletes from firestore
+   
+                }} >
+              <FontAwesomeIcon  icon={faTrash} size={20} color={'#FF367E'} ></FontAwesomeIcon>
+              </TouchableOpacity>
+             
+             
+           
             </ListItem.Content>
+        
           </ListItem>
+          
           </View>
           
           )
@@ -251,14 +313,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+  tinyLogo: {
+    width: '110%',
+    height: 400,
+    marginLeft: -16,
+    marginTop:-20
+  },
   input: {
     backgroundColor: '#DFDFDF',
     margin: 7
-  },
-  listItem: { 
-    marginTop: 8,
-    marginBottom: 8,
-    backgroundColor: 'pink'
   },
   textContainer: {
     flex: 1,
@@ -280,12 +343,13 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   modalBg: {
-    flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'center',
     backgroundColor: 'rgba(52, 52, 52, 0.6)',
+    height: 732,
   },
   modalContainer: {
+    top: 20,
     flex: 1,
     width: 370,
     backgroundColor: 'white',
