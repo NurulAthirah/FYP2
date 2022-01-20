@@ -1,19 +1,44 @@
 import React, { Component, useState } from "react";
-import { View, Text, StyleSheet, Button, TouchableOpacity,SafeAreaView, ScrollView, Modal } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity,SafeAreaView, ListItem, Modal } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome,faShoppingBag,faUser, faFileInvoiceDollar, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
+import { getProduct } from "../api/productApi";
+
 import ProductsScreen from "./ProductsScreen";
 import SignUpScreen from "./SignUpScreen";
-import ProfileScreen from "./ProfileScreen";
-export default function HomeScreen ({}) {
 
-const [ModalOpen, setModalOpen] = useState(false)
+class HomeScreen extends Component {
 
 
-const navigation = useNavigation();
+state = {
+  productList: [],
+  picture: null,
+  refreshing: false,
+  currentItem: null,
+  desc: null,
+  quantity: null,
+  price: null,
+  productlink: null,
+  ModalOpen: false
+}
 
-    return (
+onItemReceived = (productList) => {
+  console.log(productList);
+  this.setState(prevState => ({
+    productList: prevState.productList = productList
+  }));
+}
+
+componentDidMount() {
+ getProduct(this.onItemReceived); //calls the items from firestore
+   }
+
+render() {
+  const { ModalOpen } = this.state;
+ // const {navigation} = useNavigation()
+
+  return(
 <SafeAreaView style={styles.container}>
 <View style={styles.rect}>
   <View style={styles.rect2}></View>
@@ -22,28 +47,28 @@ const navigation = useNavigation();
 
 
     <TouchableOpacity
-        onPress={() => navigation.navigate('Home')}
+        onPress={() => this.props.navigation.navigate('Home')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faHome} size={40} style={styles.icon}></FontAwesomeIcon>
     <Text style={styles.icontext}>Home</Text>
     </TouchableOpacity>
 
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Products')}
+        onPress={() =>  this.props.navigation.navigate('Products')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faShoppingBag} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Products</Text>
     </TouchableOpacity>
     
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Transactions')}
+        onPress={() =>  this.props.navigation.navigate('Transactions')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faFileInvoiceDollar} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Records</Text>
     </TouchableOpacity>
     
     <TouchableOpacity
-        onPress={() =>  navigation.navigate('Profile')}
+        onPress={() =>  this.props.navigation.navigate('Home')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faUser} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Profile</Text>
@@ -52,45 +77,10 @@ const navigation = useNavigation();
   </View>
 </View>
 
-<Modal 
-visible={ModalOpen}
-animationType={'slide'}
-transparent visible={ModalOpen}>
-  <TouchableOpacity style={styles.modalBg} onPress={() => setModalOpen(false)}>
-    <View style={styles.modalContainer}>
+
+
+
    
-      <TouchableOpacity 
-      onPress={() =>  navigation.navigate('Products')}>
-      <Text style={styles.text2}>Add Products</Text>
-      </TouchableOpacity>
-      <TouchableOpacity 
-      onPress={() =>  navigation.navigate('Home')}>
-      <Text style={styles.text2}>Add Transactions</Text>
-      </TouchableOpacity>
-      
-    </View>
-    </TouchableOpacity>
-</Modal>
-
-        <TouchableOpacity
-        onPress={() => setModalOpen(true)}
-       
-        style={styles.circle2}>
-    <FontAwesomeIcon icon={faPlusCircle} margin={-5} size={60} color={'#FF367E'} ></FontAwesomeIcon>
-    </TouchableOpacity>
-
-
-    <ScrollView style={styles.scrollView}>
-        <Text style={styles.text}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </Text>
-      </ScrollView>
    
 
 </SafeAreaView>
@@ -98,7 +88,7 @@ transparent visible={ModalOpen}>
 
     );
   
-}
+}}
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -185,3 +175,4 @@ const styles = StyleSheet.create({
   },
 
 });
+export default HomeScreen
