@@ -19,30 +19,41 @@ const ProductImgPicker = ({image, onImagePicked}) =>{
         }
     }, [image])
 
-
+    const options = {
+        maxWidth: 2000,
+        maxHeight: 2000,
+        storageOptions: {
+          skipBackup: true,
+          path: 'images'
+        }
+      };
 
 pickImageHandler = () => {
-    launchImageLibrary({ title: 'Pick an Image', maxWidth: 800, maxHeight: 600 })
-    response => {
-        if (response.errorCode) {
-            console.log("image error", response.errorMessage);
+    launchImageLibrary(options, response => {
+            
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.error) {
+          console.log('ImagePicker Error: ', response.error);
+        } else if (response.customButton) {
+          console.log('User tapped custom button: ', response.customButton);
         } else {
-            setSelectedImage({ uri: response.uri });
-            onImagePicked({ uri: response.uri });
-            console.log("Image: " + response.uri) 
+          const source = { uri: response.assets[0].uri };
+          const source2 = response.assets[0].uri;
+          console.log(source);
+          setSelectedImage(source);
+          onImagePicked(source);
         }
-    }
-}
+      });
+    };
 
 return (
     <View style={styles.container}>
         <View style={styles.imageContainer}>
-            <Image source={selectedImage} style={styles.previewImage}/>
+          <Image source={image} style={styles.previewImage}/>
         </View>
         <View>
-
-
-           <Button title="Pick Image"  onPress={this.pickImageHandler} color='#FF367E'/> 
+           <Button title="Pick Image" onPress={pickImageHandler} color='#FF367E'/> 
         </View>
     </View>
 )
