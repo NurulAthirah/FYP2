@@ -9,18 +9,20 @@ import { View,
          Modal,
          RefreshControl,
          TextInput} from "react-native";
-import {addTransaction, getTransaction, getProduct} from '../api/productApi';
+import {addTransaction, getTransaction, getProduct, DeleteTrans} from '../api/productApi';
 import { onItemReceived } from '../screens/ProductsScreen'
 import PlusIcon from "../components/PlusIcon";
 import { useNavigation } from '@react-navigation/core'
 import {ListItem, Divider, SectionList} from 'react-native-elements'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import {faPlusCircle, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
+import {faTrash, faTimesCircle} from '@fortawesome/free-solid-svg-icons';
 import {auth} from '../config/db'
 import { KeyboardAvoidingView, NativeBaseProvider } from "native-base";
 import {Picker} from '@react-native-picker/picker';
 import DatePicker from 'react-native-date-picker';
 import moment from "moment";
+import RNRestart from 'react-native-restart';
+
 
 class TransactionsScreen extends Component {
  
@@ -28,28 +30,61 @@ class TransactionsScreen extends Component {
 
     state = {
       ModalOpen2: false,
+      ModalOpen3: false,
       productList: [],
       transactionList: [],
       currentItem: null,
       quantity: null,
       sales: null,
       expenses: null,
+      name: null,
       transactionDate: new Date(),
       date: new Date(),
       open: null,
+      open2: null,
       datetime: null,
-      selectedValue: null
+      selectedValue: null,
     }
      
+  onTransDelete = (index) => {
+
+    alert(
+      'Hey There!',
+      'Two button alert dialog',
+      [
+        {text: 'Yes', onPress: () => console.log('Yes button clicked')},
+        {text: 'No', onPress: () => console.log('No button clicked'), style: 'cancel'},
+      ],
+      { 
+        cancelable: true 
+      }
+    );
+    console.log("Deleted Transaction")
+
+    var newTransactionList = [...this.state.transactionList];
+    
+    newTransactionList.splice(index, 1);
+
+    this.setState(prevState => ({
+      transactionList: prevState.transactionList = newTransactionList
+    }));
+
+
+  };
+    
 
     onTransactionAdded = (transaction) => {
+      
+ 
+
       this.setState(prevState => ({
         transactionList: [...prevState.transactionList, transaction]
       }))
       console.log("Transaction Added");
-      console.log(transaction)
+      console.log(transaction);
+      RNRestart.Restart()
+ 
     }
-
   
     onTransactionReceived = (transactionList) => {
       console.log(transactionList);
@@ -60,6 +95,7 @@ class TransactionsScreen extends Component {
 
     onItemReceived = (productList) => {
       console.log(productList);
+      
       this.setState(prevState => ({
         productList: prevState.productList = productList
       }));
@@ -76,14 +112,14 @@ class TransactionsScreen extends Component {
       this.setState({ ModalOpen2: visible })
     }
 
-    setOpen = (visible) => {
-      this.setState({ open: visible })
+    setModalOpen3 = (visible) => {
+      this.setState({ ModalOpen3: visible })
     }
+
 
 
     setDate = (date) => {
       this.setState({ 
-        
         transactionDate: date,
         datetime:  moment(date).format("MMM Do YY")})
     }
@@ -91,15 +127,17 @@ class TransactionsScreen extends Component {
     setSelectedValue = (selectedValue) => {
       this.setState({
         selectedValue : selectedValue,
-        currentItem: selectedValue
+        currentItem: selectedValue,
       })
     }
 
     render() { 
     const { ModalOpen2 } = this.state;
-    const { open } = this.state;
+    const { ModalOpen3 } = this.state;
     const { date } = this.state;
-    const { selectedValue } = this.state
+    const { selectedValue } = this.state;
+    
+  
   
     return(
      
@@ -116,7 +154,7 @@ top={10} >
 onPress={() => this.setModalOpen2(true) }/>
 
 <Button color='#FF367E' title={"Items Sold"}
-onPress={() => this.setModalOpen2(true) }/>
+onPress={() => this.setModalOpen3(true) }/>
 
 
 </View>
@@ -150,12 +188,14 @@ style={{position: 'absolute'}}>
     </TouchableOpacity>
 
     <Picker
+
         selectedValue={selectedValue}
         style={{ height: 50, width: 150 }}
         onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}
       >
         {this.state.productList.map((item, index) => {
-   return (< Picker.Item label={item.name} value={item.name} key={item} />);
+   return (< Picker.Item label={item.name} value={item} key={item} />);
+
 })}  
       </Picker>
       
@@ -179,12 +219,11 @@ style={{position: 'absolute'}}>
         sales: prevState.sales = text 
         }))} />
 
-        <Button title="Open" onPress={() => this.setOpen(true)} />
+        <Text>Transaction Date</Text>
 
         <DatePicker
-        modal
-        open={open}
         date={date}
+        mode="date"
         onConfirm={(date) => {
           this.setOpen(false)
           this.setDate(date)
@@ -203,7 +242,8 @@ style={{position: 'absolute'}}>
         
           addTransaction({
             userId: this.uid,
-            name: this.state.currentItem,
+            name: this.state.currentItem.name,
+            id: this.state.currentItem.productid,
             quantity: this.state.quantity,
             sales: this.state.sales,
             transactionDate: this.state.transactionDate,
@@ -225,11 +265,110 @@ style={{position: 'absolute'}}>
    
 </Modal>
 
+<Modal 
+visible={ModalOpen3}
+animationType={'slide'}
+transparent={true}
+style={{position: 'absolute'}}>
+
+  <View style={styles.modalBg}>
+  <KeyboardAvoidingView  enabled behavior={Platform.OS === "android" ? undefined : "position"}>
+  <ScrollView scrollEnabled={false} keyboardShouldPersistTaps="handled">
+  <View>
+  
+    <View style={styles.modalContainer}>
+      
+    <View>
+    <TouchableOpacity // close icon 
+        onPress={() => this.setModalOpen3(false) }
+        style={styles.circle3}>
+
+    <FontAwesomeIcon icon={faTimesCircle} margin={-5} size={40} color={'#FF367E'} ></FontAwesomeIcon>
+    </TouchableOpacity>
+
+    <Picker
+
+        selectedValue={selectedValue}
+        style={{ height: 50, width: 150 }}
+        onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}
+      >
+        {this.state.productList.map((item, index) => {
+   return (< Picker.Item label={item.name} value={item} key={item} />);
+})}  
+      </Picker>
+      
+      <TextInput
+        style={styles.input}
+        keyboardType='numeric'
+        placeholder="Quantity"
+        value={this.state.quantity}
+        ref={input => { this.textInput = input }} 
+        onChangeText={(text) => this.setState(prevState => ({
+        quantity: prevState.quantity = text 
+        }))} />
+
+        <TextInput
+        style={styles.input}
+        keyboardType='numeric'
+        placeholder="Expenses"
+        value={this.state.sales}
+        ref={input => { this.textInput = input }} 
+        onChangeText={(text) => this.setState(prevState => ({
+        sales: prevState.sales = text 
+        }))} />
+
+        <Text>Transaction Date</Text>
+
+        <DatePicker
+        date={date}
+        mode="date"
+        onConfirm={(date) => {
+          this.setOpen2(false)
+          this.setDate(date)
+        }}
+        onCancel={() => {
+          this.setOpen2(false)
+        }}
+      />
+
+
+<View style={[{ width: "40%", alignSelf: 'center'}]}>
+      <Button
+      title='Submit'
+      color='#FF367E'
+      onPress={() => 
+        
+          addTransaction({
+            userId: this.uid,
+            name: this.state.currentItem.name,
+            id: this.state.currentItem.productid,
+            quantity: this.state.quantity*-1,
+            sales: this.state.sales,
+            transactionDate: this.state.transactionDate,
+            datetime: this.state.datetime,
+            ModalOpen3 : this.setModalOpen3(false)
+          },
+          this.onTransactionAdded,
+          this.textInput.clear()
+          )
+      }
+      />
+       </View>
+      </View>
+    </View>
+    </View> 
+        </ScrollView>
+    </KeyboardAvoidingView>
+    </View>
+   
+</Modal>
+
 </NativeBaseProvider>
 
 <View style={styles.heading}>
   <Text style={{fontSize:16}}>Date Type  Product                                        Qty  Expenses</Text>
 </View>
+
  <FlatList 
        style={styles.container3}
        data={this.state.transactionList}
@@ -241,14 +380,23 @@ style={{position: 'absolute'}}>
           return(
 
        <View containerStyle={{backgroundColor:"black"}}>
+  <TouchableOpacity 
+              onLongPress={() => 
+                {
+                 this.onTransDelete(index)
+                 DeleteTrans(item)
+                 }} >
 
-          <ListItem  key={item} bottomDivider  onPress={() => {}} >
-          <Text>{item.datetime}</Text>
+          <ListItem  key={item} bottomDivider   >
+
+            <Text>{item.datetime}</Text>
             <Text>{item.name}</Text>
             <Text>{item.quantity}</Text>
             <Text>{item.sales}</Text>
+              
           </ListItem>
-         
+          </TouchableOpacity>
+           
           </View>
          
           )
@@ -256,7 +404,7 @@ style={{position: 'absolute'}}>
         }
       }
       />
-        
+      
       </View>
     </View>
       
@@ -278,9 +426,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   container3: {
-    position: 'absolute',
     width: '100%',
-    marginTop: 40
+    marginTop: 40,
+    
     },
   input: {
     backgroundColor: '#DFDFDF',
