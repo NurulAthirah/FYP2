@@ -1,15 +1,24 @@
 import React, { Component, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity,SafeAreaView, ListItem, Modal } from "react-native";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  Image, 
+  FlatList, 
+  TouchableOpacity,
+  SafeAreaView, 
+  RefreshControl } from "react-native";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome,faShoppingBag,faUser, faFileInvoiceDollar, faPlusCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getProduct } from "../api/productApi";
-
+import {addProduct, getProduct, DeleteProduct} from '../api/productApi';
+import {auth} from '../config/db'
+import {ListItem, Divider} from 'react-native-elements'
 import ProductsScreen from "./ProductsScreen";
 import SignUpScreen from "./SignUpScreen";
+import RNRestart from "react-native-restart";
 
 class HomeScreen extends Component {
-
 
 state = {
   productList: [],
@@ -23,20 +32,27 @@ state = {
   ModalOpen: false
 }
 
+_onRefresh() {
+  RNRestart.Restart()
+}
+
 onItemReceived = (productList) => {
-  console.log(productList);
+  productList.sort((a, b) => (a.quantity > b.quantity))
+
   this.setState(prevState => ({
     productList: prevState.productList = productList
   }));
+  
+
 }
 
 componentDidMount() {
+
  getProduct(this.onItemReceived); //calls the items from firestore
    }
 
 render() {
-  const { ModalOpen } = this.state;
- // const {navigation} = useNavigation()
+
 
   return(
 <SafeAreaView style={styles.container}>
@@ -68,14 +84,49 @@ render() {
     </TouchableOpacity>
     
     <TouchableOpacity
-        onPress={() =>  this.props.navigation.navigate('Home')}
+        onPress={() =>  this.props.navigation.navigate('Profile')}
         style={styles.circle}>
     <FontAwesomeIcon icon={faUser} size={32} style={styles.icon1}></FontAwesomeIcon>
     <Text style={styles.icontext}>Profile</Text>
     </TouchableOpacity>
     </View>
   </View>
+<View style={{flex:1}}>
+<FlatList 
+     
+     data={this.state.productList}
+     extraData={this.state.quantity}
+     ItemSeparatorComponent={() => <Divider style={{ backgroundColor: 'black' }} />}
+     keyExtractor={(item, index) => index.toString()}
+     refreshControl={
+      <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={this._onRefresh.bind(this)}
+      />}
+     renderItem={({item, index}) => {
+      
+       
+        return(
+
+          <View style={styles.rect4}>
+
+          <Image source={item.picture}  style={styles.avatar} />
+          
+          <View style={styles.listItem}>
+            <Text style={{fontWeight:"bold", fontSize: 30}}>{item.name}</Text>
+            <Text style={{fontWeight:"bold",  fontSize: 40, color: '#969696'}}>{item.quantity} IN STOCK</Text>
+        
+            </View>
+        </View>
+        )
+        
+      }
+    }
+    />
 </View>
+
+</View>
+
 
 
 
@@ -93,19 +144,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
+  avatar: {
+    width: 100,
+    height: 100,
+    overflow:'hidden',
+    justifyContent: 'flex-end',
+  },
+
+  listItem: {
+    margin: 10,
+ 
+  },
+  
   rect: {
    flex: 1,
-    backgroundColor: "white"
+    backgroundColor: '#F4F4F4'
   },
   rect2: {
    height: 240,
     backgroundColor: "#311D52"
   },
   rect3: {
-    height: 130,
+    height: 120,
     backgroundColor: "white",
     flexDirection: "row",
-    paddingBottom: 40
+    paddingBottom: 20
+  },
+  rect4: {
+    height: 100,
+    flexDirection: "row",
+    margin: 10,
+    backgroundColor: '#F4F4F4'
   },
   icon: {
     color: "white",
