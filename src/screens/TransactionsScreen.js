@@ -74,16 +74,11 @@ class TransactionsScreen extends Component {
     
 
     onTransactionAdded = (transaction) => {
-      
- 
-
       this.setState(prevState => ({
         transactionList: [...prevState.transactionList, transaction]
       }))
       console.log("Transaction Added");
       console.log(transaction);
-      RNRestart.Restart()
- 
     }
   
     onTransactionReceived = (transactionList) => {
