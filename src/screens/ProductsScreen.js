@@ -4,7 +4,7 @@ import { View,
          StyleSheet, 
          Button, 
          TouchableOpacity, 
-         NativeModule, 
+         Alert, 
          FlatList, 
          ScrollView,
          Modal,
@@ -26,8 +26,7 @@ import { useNavigation } from '@react-navigation/core'
 class ProductsScreen extends Component {
 
   _onRefresh() {
-    this.setState({refreshing: true});
-      this.setState({refreshing: false});
+    getProduct(this.onItemReceived);
     
   }
 
@@ -40,7 +39,7 @@ class ProductsScreen extends Component {
       refreshing: false,
       currentItem: null,
       desc: null,
-      quantity: null,
+      quantity: 0,
       price: null,
       productlink: null,
       ModalOpen: false
@@ -48,7 +47,7 @@ class ProductsScreen extends Component {
 
       
 
-    onItemAdded = (product) => {
+    onItemAdded = (product) => { //Add product
      
       this.setState(prevState => ({
         productList: [...prevState.productList, product]
@@ -58,7 +57,7 @@ class ProductsScreen extends Component {
  
     }
 
-    onItemReceived = (productList) => {
+    onItemReceived = (productList) => { //updates added product
       console.log(productList);
       this.setState(prevState => ({
         productList: prevState.productList = productList
@@ -68,12 +67,12 @@ class ProductsScreen extends Component {
     onItemDelete = (index) => {
 
       console.log(index)
-      var newProductList = [...this.state.productList];
+      var newProductList = [...this.state.productList]; //copy array to new array
       
-      newProductList.splice(index, 1);
+      newProductList.splice(index, 1); //gets rid of array with that index
   
       this.setState(prevState => ({
-       productList: prevState.productList = newProductList
+       productList: prevState.productList = newProductList //copy the new array back into old array
       }));
   
 
@@ -229,7 +228,7 @@ style={{position: 'absolute'}}>
 </Modal>
 
 </NativeBaseProvider>
-<TouchableOpacity // plus icon 
+<TouchableOpacity // plus 
         onPress={() => this.setModalOpen(true) }
         style={styles.circle2}>
     <FontAwesomeIcon icon={faPlusCircle} margin={-5} size={60} color={'#FF367E'} ></FontAwesomeIcon>
@@ -253,41 +252,53 @@ style={{position: 'absolute'}}>
          
           return(
          <View>
+         
+        <ListItem key={item} bottomDivider>
           
-          <ListItem key={item} bottomDivider  onPress={() => {}} 
-          >
-          
+          <TouchableOpacity style={styles.container}
+               onLongPress={() => 
+                {
+                  Alert.alert(
+                  "Delete product?", //alert title
+                   'Are you sure you want to delete this product?', //alert desc
+                  [ //buttons
+                  {
+                   text: "Ok",
+                   onPress: () => {{
+                   this.onItemDelete(index)
+                   DeleteProduct(item)
+                   }}
+                  },
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                  },
+                  ],
+                     {cancelable: true} //lets alert be closed from outward taps
+                  );}} >
+
             <ListItem.Content>
             <Image
             style={styles.tinyLogo}
             source={item.picture}
              />
-              <ListItem.Title>{item.name}  
+             <ListItem.Title>{item.name}  
               
-              </ListItem.Title>
-              <ListItem.Subtitle>{item.desc}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.quantity}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.price}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.productlink}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.userId}</ListItem.Subtitle>
-              <ListItem.Subtitle>{auth.currentUser.uid}</ListItem.Subtitle>
-              <ListItem.Subtitle>{item.productid}</ListItem.Subtitle>
-             
-               <TouchableOpacity 
-               onPress={() => 
-                {
-                  this.onItemDelete(index); //deletes from array
-                  DeleteProduct(item); //deletes from firestore
-   
-                }} >
-              <FontAwesomeIcon  icon={faTrash} size={20} color={'#FF367E'} ></FontAwesomeIcon>
-              </TouchableOpacity>
-             
-             
-           
+            </ListItem.Title>
+            <ListItem.Subtitle>{item.desc}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.quantity}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.price}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.productlink}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.userId}</ListItem.Subtitle>
+            <ListItem.Subtitle>{auth.currentUser.uid}</ListItem.Subtitle>
+            <ListItem.Subtitle>{item.productid}</ListItem.Subtitle>
+
             </ListItem.Content>
-        
-          </ListItem>
+
+            </TouchableOpacity>
+            
+         </ListItem>
           
           </View>
           
