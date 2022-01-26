@@ -27,6 +27,8 @@ export function addProduct(product, addComplete){
 
 }
 
+
+
 export function DeleteProduct(product, deleteComplete){
 
     console.log(product.productid)
@@ -88,7 +90,6 @@ export function addTransaction(transaction, addComplete){
 
 export async function getProduct(productsRetrieved){
   
-    console.log("hey")
     const uid = auth.currentUser.uid
     var productList =[];
 
@@ -128,6 +129,91 @@ export async function getTransaction(transactionsRetrieved){
     transactionsRetrieved(transactionList);
 }
 
+
+export async function getQuantity(graphRetrieved, date1, date2, date3, date4, date5, date6, date7){
+  
+
+    const uid = auth.currentUser.uid
+
+    var graph1=[], graph2=[], graph3=[], graph4=[], graph5=[], graph6=[], graph7=[] // array will store transaction object according to date
+    var snapshot = await firestore() // get transaction object and push into new graph array
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date1 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph1.push(doc.data());
+    }),
+
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date2 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph2.push(doc.data());
+    }),
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date3 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph3.push(doc.data());
+    }),
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date4 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph4.push(doc.data());
+    }),
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date5 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph5.push(doc.data());
+    }),
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date6 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph6.push(doc.data());
+    }),
+    snapshot = await firestore()
+    .collection('userId')
+    .doc(uid)
+    .collection('transaction')
+    .where("datetime", '==', date7 )
+    .get()
+
+    snapshot.forEach((doc) => {
+        graph7.push(doc.data());
+    }),
+
+
+    graphRetrieved(graph1, graph2, graph3, graph4, graph5, graph6, graph7);
+    console.log("graph quantity retrieved")
+    console.log(graph1)
+}
+
 export function DeleteTrans(transaction, deleteComplete){
 
     console.log(transaction.transid)
@@ -136,7 +222,7 @@ export function DeleteTrans(transaction, deleteComplete){
     .collection('userId')
     .doc(auth.currentUser.uid)
     .collection('transaction')
-    .doc(transaction.transid) //its not gonna work yet 
+    .doc(transaction.transid) 
     .delete()
     .catch((error) => console.log(error));
   
