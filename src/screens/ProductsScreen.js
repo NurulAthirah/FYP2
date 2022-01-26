@@ -10,6 +10,7 @@ import { View,
          Modal,
          RefreshControl,
          Image,
+         Linking,
          TextInput } from "react-native";
 import {addProduct, getProduct, DeleteProduct} from '../api/productApi';
 import {ListItem, Divider} from 'react-native-elements'
@@ -27,7 +28,6 @@ class ProductsScreen extends Component {
 
   _onRefresh() {
     getProduct(this.onItemReceived);
-    
   }
 
   
@@ -259,7 +259,7 @@ style={{position: 'absolute'}}>
                onLongPress={() => 
                 {
                   Alert.alert(
-                  "Delete product?", //alert title
+                  "Delete product", //alert title
                    'Are you sure you want to delete this product?', //alert desc
                   [ //buttons
                   {
@@ -289,10 +289,16 @@ style={{position: 'absolute'}}>
             <ListItem.Subtitle>{item.desc}</ListItem.Subtitle>
             <ListItem.Subtitle>{item.quantity}</ListItem.Subtitle>
             <ListItem.Subtitle>{item.price}</ListItem.Subtitle>
-            <ListItem.Subtitle>{item.productlink}</ListItem.Subtitle>
-            <ListItem.Subtitle>{item.userId}</ListItem.Subtitle>
-            <ListItem.Subtitle>{auth.currentUser.uid}</ListItem.Subtitle>
-            <ListItem.Subtitle>{item.productid}</ListItem.Subtitle>
+            <ListItem.Subtitle> </ListItem.Subtitle>
+
+            <Button color='#FF367E' title={"Order Item"} 
+            onPress={() => {
+             
+              if (item.productlink == null){
+                Alert.alert("This item has no product link")
+              }
+              else  Linking.openURL(item.productlink)
+              }}/>
 
             </ListItem.Content>
 
