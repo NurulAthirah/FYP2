@@ -1,18 +1,19 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState, useContext } from 'react'
-import { KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
+import { Alert, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native'
 import RNRestart from 'react-native-restart';
 import LinearGradient from 'react-native-linear-gradient';
 import {auth}  from '../config/db';
 import { color } from 'react-native-reanimated';
 
 
-
-
 const SignUpScreen = () => {
  const [email, setEmail] = useState('')
  const [password, setPassword] =useState('')
  const navigation = useNavigation()
+
+ this.username = React.createRef();
+ 
 
  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -24,12 +25,12 @@ const SignUpScreen = () => {
     return unsubscribe
   }, [])
 
-  const handleSignOut = () => {
+  const handleSignOut = () => { //handle sign out
     auth
       .signOut()
       .then(() => {
         RNRestart.Restart(),
-        navigation.navigate("SignUp"),
+        navigation.navigate("SignIn"),
         console.log('Logged out');
        
       })
@@ -42,6 +43,8 @@ const SignUpScreen = () => {
       .then(userCredentials => {
         const user = userCredentials.user;
         console.log('Registered with:', user.email);
+        Alert.alert("You have registered!")
+        this.clear
       })
       .catch(error => alert(error.message))
   }
@@ -52,7 +55,6 @@ const SignUpScreen = () => {
       .then(userCredentials => {
         const user = userCredentials.user;
         navigation.navigate("Home"),
-        RNRestart.Restart(),
         console.log('Logged in with:', user.email);
       })
       .catch(error => alert(error.message))
@@ -63,11 +65,6 @@ const SignUpScreen = () => {
     <View
     style={styles.container}
     behavior="padding">
-      <LinearGradient
-        // Background Linear Gradient
-        colors={['#311D52', '#311D52','#FFFFFF','transparent']}
-        style={styles.background}
-      />
       
       <Text style={{color: '#FFFFFF',fontSize: 40 }}>Log Help</Text>
       <Text style={{color: '#FFFFFF',fontSize: 20}}>Inventory System Management</Text>
@@ -94,18 +91,18 @@ const SignUpScreen = () => {
 
     <View style={styles.buttonContainer}>
       <TouchableOpacity
-        onPress={handleLogin}
+        onPress={handleSignUp}
         style={styles.button}
       >
-        <Text style={styles.buttonText}>SIGN IN</Text>
+        <Text style={styles.buttonText}>REGISTER</Text>
       </TouchableOpacity>
     </View>
 
 
     <TouchableOpacity
-        onPress={handleSignUp}>
-        <Text style={{color:'#000000',fontSize:16,paddingTop:10}}>Do not have any account yet?</Text>
-        <Text style={{color:'#FF367E',fontSize:16}}>Sign Up</Text>
+        onPress={() => {navigation.navigate("SignIn")}}>
+        <Text style={{color:'#FF367E',fontSize:16,paddingTop:10}}>Go back to Login page</Text>
+      <Text> </Text>
       </TouchableOpacity>
   </View>
 )
@@ -118,7 +115,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#311D52",
   },
   background: {
     position: 'absolute',
