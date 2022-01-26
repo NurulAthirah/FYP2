@@ -81,7 +81,7 @@ class ProductsScreen extends Component {
     componentDidMount() {
    getProduct(this.onItemReceived); //calls the items from firestore
    this.setState({
-      picture: {uri: 'https://www.spicevillage.eu/media/catalog/product/n/o/not-found_1024x1024_91cf4817-5921-46d4-b879-da02cdd86719.png'} });
+      picture: {uri: 'https://i.ibb.co/wcD5CXk/No-photo-uploaded.png'} });
    
     }
 
@@ -297,7 +297,26 @@ style={{position: 'absolute'}}>
               if (item.productlink == null){
                 Alert.alert("This item has no product link")
               }
-              else  Linking.openURL(item.productlink)
+              else  {
+                Alert.alert(
+                  "Order Item?", //alert title
+                   'This will bring you to an external webpage', //alert desc
+                  [ //buttons
+                  {
+                   text: "Ok",
+                   onPress: () => {{
+                    Linking.openURL(item.productlink)
+                   }}
+                  },
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                  },
+                  ],
+                     {cancelable: true} //lets alert be closed from outward taps
+                  );
+               }
               }}/>
 
             </ListItem.Content>
