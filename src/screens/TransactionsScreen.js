@@ -7,6 +7,7 @@ import { View,
          FlatList, 
          ScrollView,
          Modal,
+         Alert,
          RefreshControl,
          TextInput} from "react-native";
 import {addTransaction, getTransaction, getProduct, DeleteTrans} from '../api/productApi';
@@ -34,31 +35,20 @@ class TransactionsScreen extends Component {
       productList: [],
       transactionList: [],
       currentItem: null,
-      quantity: null,
-      sales: null,
-      expenses: null,
+      quantity: 0,
+      sales: 0,
+      expenses: 0,
       name: null,
       transactionDate: new Date(),
       date: new Date(),
       open: null,
       open2: null,
-      datetime: null,
+      datetime: moment(new Date()).format("DD/MM/YY"),
       selectedValue: null,
     }
      
   onTransDelete = (index) => {
 
-    alert(
-      'Hey There!',
-      'Two button alert dialog',
-      [
-        {text: 'Yes', onPress: () => console.log('Yes button clicked')},
-        {text: 'No', onPress: () => console.log('No button clicked'), style: 'cancel'},
-      ],
-      { 
-        cancelable: true 
-      }
-    );
     console.log("Deleted Transaction")
 
     var newTransactionList = [...this.state.transactionList];
@@ -111,27 +101,25 @@ class TransactionsScreen extends Component {
       this.setState({ ModalOpen3: visible })
     }
 
-
-
     setDate = (date) => {
       this.setState({ 
         transactionDate: date,
-        datetime:  moment(date).format("MMM Do YY")})
+        datetime:  moment(date).format("DD/MM/YY")})
     }
     
     setSelectedValue = (selectedValue) => {
       this.setState({
+
         selectedValue : selectedValue,
         currentItem: selectedValue,
       })
     }
 
     render() { 
-    const { ModalOpen2 } = this.state;
-    const { ModalOpen3 } = this.state;
-    const { date } = this.state;
-    const { selectedValue } = this.state;
-    
+      const { ModalOpen2 } = this.state;
+      const { ModalOpen3 } = this.state;
+      const { date } = this.state;
+      const { selectedValue } = this.state;
   
   
     return(
@@ -155,10 +143,10 @@ onPress={() => this.setModalOpen3(true) }/>
 </View>
 
 
-<Text style={styles.text}>Monthly Transactions</Text>
+<Text style={styles.text}>TRANSACTIONS</Text>
 <View style={styles.container2}>
 
-{/*Opens Modal and receives product details from user*/}
+{/*Opens Modal for Items restocked*/}
 <NativeBaseProvider>
 
 <Modal 
@@ -183,21 +171,23 @@ style={{position: 'absolute'}}>
     </TouchableOpacity>
 
     <Picker
-
+    
         selectedValue={selectedValue}
         style={{ height: 50, width: 150 }}
         onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}
       >
+        < Picker.Item label={"Please select item"}/>
         {this.state.productList.map((item, index) => {
-   return (< Picker.Item label={item.name} value={item} key={item} />);
+   return (
+   < Picker.Item label={item.name} value={item} key={item} 
+   />);})}  
 
-})}  
       </Picker>
       
       <TextInput
         style={styles.input}
         keyboardType='numeric'
-        placeholder="Quantity"
+        placeholder="Quantity Added"
         value={this.state.quantity}
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
@@ -207,7 +197,7 @@ style={{position: 'absolute'}}>
         <TextInput
         style={styles.input}
         keyboardType='numeric'
-        placeholder="Expenses"
+        placeholder="Expenses Spent"
         value={this.state.sales}
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
@@ -219,15 +209,11 @@ style={{position: 'absolute'}}>
         <DatePicker
         date={date}
         mode="date"
-        onConfirm={(date) => {
-          this.setOpen(false)
+        onDateChange={(date) => {
           this.setDate(date)
         }}
-        onCancel={() => {
-          this.setOpen(false)
-        }}
       />
-
+     
 
 <View style={[{ width: "40%", alignSelf: 'center'}]}>
       <Button
@@ -239,8 +225,8 @@ style={{position: 'absolute'}}>
             userId: this.uid,
             name: this.state.currentItem.name,
             id: this.state.currentItem.productid,
-            quantity: this.state.quantity,
-            sales: this.state.sales,
+            quantity: this.state.quantity*1,
+            sales: this.state.sales*-1,
             transactionDate: this.state.transactionDate,
             datetime: this.state.datetime,
             ModalOpen2 : this.setModalOpen2(false)
@@ -287,6 +273,7 @@ style={{position: 'absolute'}}>
         style={{ height: 50, width: 150 }}
         onValueChange={(itemValue, itemIndex) => this.setSelectedValue(itemValue)}
       >
+        < Picker.Item label={"Please select item"}/>
         {this.state.productList.map((item, index) => {
    return (< Picker.Item label={item.name} value={item} key={item} />);
 })}  
@@ -295,7 +282,7 @@ style={{position: 'absolute'}}>
       <TextInput
         style={styles.input}
         keyboardType='numeric'
-        placeholder="Quantity"
+        placeholder="Quantity Sold"
         value={this.state.quantity}
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
@@ -305,7 +292,7 @@ style={{position: 'absolute'}}>
         <TextInput
         style={styles.input}
         keyboardType='numeric'
-        placeholder="Expenses"
+        placeholder="Total Sales"
         value={this.state.sales}
         ref={input => { this.textInput = input }} 
         onChangeText={(text) => this.setState(prevState => ({
@@ -317,12 +304,8 @@ style={{position: 'absolute'}}>
         <DatePicker
         date={date}
         mode="date"
-        onConfirm={(date) => {
-          this.setOpen2(false)
+        onDateChange={(date) => {
           this.setDate(date)
-        }}
-        onCancel={() => {
-          this.setOpen2(false)
         }}
       />
 
@@ -338,7 +321,7 @@ style={{position: 'absolute'}}>
             name: this.state.currentItem.name,
             id: this.state.currentItem.productid,
             quantity: this.state.quantity*-1,
-            sales: this.state.sales,
+            sales: this.state.sales*1,
             transactionDate: this.state.transactionDate,
             datetime: this.state.datetime,
             ModalOpen3 : this.setModalOpen3(false)
@@ -361,7 +344,7 @@ style={{position: 'absolute'}}>
 </NativeBaseProvider>
 
 <View style={styles.heading}>
-  <Text style={{fontSize:16}}>Date Type  Product                                        Qty  Expenses</Text>
+  <Text style={{fontSize:16}}>Date                Product                                     Qty  Expenses</Text>
 </View>
 
  <FlatList 
@@ -374,22 +357,39 @@ style={{position: 'absolute'}}>
          
           return(
 
-       <View containerStyle={{backgroundColor:"black"}}>
+  <View containerStyle={{backgroundColor:"black"}}>
   <TouchableOpacity 
               onLongPress={() => 
                 {
-                 this.onTransDelete(index)
-                 DeleteTrans(item)
-                 }} >
+                  Alert.alert(
+                  "Delete transaction", //alert title
+                   'Are you sure you want to delete this transaction?', //alert desc
+                  [ //buttons
+                  {
+                   text: "Ok",
+                   onPress: () => {{
+                   this.onTransDelete(index)
+                   DeleteTrans(item)
+                   }}
+                  },
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel"
+                  },
+                  ],
+                     {cancelable: true} //lets alert be closed from outward taps
+                  );}} >
 
-          <ListItem  key={item} bottomDivider   >
+          <ListItem  key={item}>
 
-            <Text>{item.datetime}</Text>
-            <Text>{item.name}</Text>
-            <Text>{item.quantity}</Text>
+            <Text style={styles.row1}>{item.datetime}</Text>
+            <Text style={styles.row2}>{item.name}</Text> 
+            <Text style={styles.row3}>{item.quantity}</Text>
             <Text>{item.sales}</Text>
               
           </ListItem>
+
           </TouchableOpacity>
            
           </View>
@@ -423,24 +423,33 @@ const styles = StyleSheet.create({
   container3: {
     width: '100%',
     marginTop: 40,
-    
-    },
+  },
+  row1: {
+      width: 60,
+  },
+  row2: {
+     width: 200
+  },
+  row3: {
+    width: 40,
+    alignSelf: 'center'
+  }, 
   input: {
     backgroundColor: '#DFDFDF',
     margin: 7
   },
-  heading: {
-  backgroundColor: '#FEA82F',
-  padding: 10,
-  fontSize:16,
-  position: 'absolute',
-  width: '100%'
+   heading: {
+   backgroundColor: '#FEA82F',
+   padding: 10,
+   fontSize:16,
+   position: 'absolute',
+   width: '100%'
   },
   text: {
-  color: 'white',
-  margin: 10,
-  fontSize: 20,
-  fontWeight: 'bold'
+   color: 'white',
+   margin: 10,
+   fontSize: 20,
+   fontWeight: 'bold'
   },
   listItem: { 
     marginTop: 8,
